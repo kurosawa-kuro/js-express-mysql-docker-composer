@@ -1,15 +1,21 @@
 require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2/promise');
+const expressListEndpoints = require("express-list-endpoints");
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
-    res.send('Hello World from Express!');
+    const originalEndpoints = expressListEndpoints(app);
+
+    const sanitizedEndpoints = originalEndpoints.map((endpoint) => {
+        const { middlewares, ...sanitizedEndpoint } = endpoint;
+        return sanitizedEndpoint;
+    });
+    res.send(sanitizedEndpoints);
 });
 
 app.get('/microposts', async (req, res) => {
-
     try {
         const connection = await mysql.createConnection({
             host: process.env.DB_HOST,
@@ -20,7 +26,6 @@ app.get('/microposts', async (req, res) => {
                 rejectUnauthorized: true
             }
         });
-
 
         const [results] = await connection.query('SELECT * FROM microposts');
         res.send(results);
