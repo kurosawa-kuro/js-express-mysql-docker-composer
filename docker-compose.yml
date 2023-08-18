@@ -1,0 +1,11 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app # カレントディレクトリをコンテナの/usr/src/appにマウント
+      # - /usr/src/app/node_modules # node_modulesをオーバーライドしてホストのものを使わないようにする場合はこの行のコメントを外す
+
+    working_dir: /usr/src/app
